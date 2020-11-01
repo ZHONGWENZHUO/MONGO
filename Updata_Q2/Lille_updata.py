@@ -6,6 +6,7 @@ from pymongo import MongoClient
 import time
 import dateutil.parser
 
+
 atlas = MongoClient('mongodb+srv://1023924802:mc7JDPTtGzXHRdsy@cluster0.8smsh.mongodb.net/<ville>?retryWrites=true&w=majority')
 
 db = atlas.lille

@@ -21,7 +21,7 @@ elif ville[0]==2:
 elif ville[0]==3:
 	db=atlas.rennes
 else:
-	print('wrong')
+	print('wrong key')
 
 station_closest = db.station.find({
     "geometry.coordinates": {
