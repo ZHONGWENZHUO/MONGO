@@ -6,7 +6,7 @@ from pprint import pprint
 atlas = MongoClient('mongodb+srv://1023924802:mc7JDPTtGzXHRdsy@cluster0.8smsh.mongodb.net/<ville>?retryWrites=true&w=majority')
 
 
-def begin():
+def begin(): #for choice city
 	temp = input('Please select a city：0-lille,1-lyon，2-paris，3-rennes,Press Enter to end:')
 	ville=list(map(int,temp.strip().split()))
 	print(ville[0])
@@ -21,7 +21,7 @@ def begin():
 	else:
 		print('wrong key')
 	return db
-def find_station(db):
+def find_station(db):#find station by name
 	name = str(input('Please input the name:'))
 	result= db.station.find_one({'name': {"$regex": ".*"+str(name)+".*"}})
 	pprint(result)
@@ -76,6 +76,40 @@ def deactivate_station(db):#At least four points need to be entered, and the fir
 			'tpe': tpe  # set tpe as false
 		}
 	})
+def ratio(db):
+	cursor=db.datas.find({})
+	station=[]
+	for i in cursor:
+		bike=i.get('bike_availbale')
+		stand=i.get('stand_availbale')
+		week=(i.get('date')).strftime("%A")
+		hours=int((i.get('date')).strftime("%H"))
+		if week not in ['SATURDAY','SUNDAY'] and 18 <= hours <= 19 and stand!=0:
+			ratio=bike/stand
+			if(ratio<=0.02):
+				station.append(i)
+	print('Get: ' + str(len(station)) + ' station-------------------------------')
+	for i in station:
+		name=db.station.find_one({'_id':i.get('station_id')}).get('name')
+		pprint(name)
+def run(db):
+	temp = int(input('Please select ：\n'
+	             '0-Find a station by name\n'
+	             '1-Update a station\n'
+	             '2-Delete a station\n'
+	             '3-deactivate all station in an area\n'
+	             '4-give all stations with a ratio bike/total_stand under 20% between 18h and 19h00 (monday to friday)'
+	             'Press Enter to end:'))
+	if temp == 0:
+		find_station(db)
+	elif temp == 1:
+		update_station(db)
+	elif temp == 2:
+		delete_station(db)
+	elif temp == 3:
+		deactivate_station(db)
+	elif temp == 4:
+		ratio(db)
 
 
 if __name__ == '__main__':
@@ -83,3 +117,5 @@ if __name__ == '__main__':
 	# find_station(db)
 	# update_station(db)
 	#deactivate_station(db) #A set of data for testing 3.058288 50.629044 3.157181 50.714733 3.126501 50.61915 3.058288 50.629044
+	# ratio(db)
+	run(db)
